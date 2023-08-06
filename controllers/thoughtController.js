@@ -16,7 +16,7 @@ module.exports = {
   // Get a single thought
   async getSingleThought(req, res) {
     try {
-      const thought = await Thought.findOne({ _id: req.params._id })
+      const thought = await Thought.findOne({ _id: req.params.thoughtId })
         .select('-__v');
 
       if (!thought) {
@@ -97,7 +97,7 @@ module.exports = {
   },
 
   // Add an reaction to a thought
-  async addAssignment(req, res) {
+  async addReaction(req, res) {
     console.log('You are adding a reaction');
     console.log(req.body);
 
