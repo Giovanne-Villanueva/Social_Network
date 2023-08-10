@@ -4,7 +4,7 @@ module.exports = {
   // Get all thoughts
   async getThoughts(req, res) {
     try {
-      const thoughts = await Thought.find();
+      const thoughts = await Thought.find({});
 
       res.json(thoughts);
 
@@ -33,9 +33,12 @@ module.exports = {
   // create a new thought
   async createThought(req, res) {
     try {
-      const thought = await Thought.create(req.body);
+      const thought = await Thought.create({
+        username: req.body.username,
+        thoughtText: req.body.thoughtText
+      });
 
-      const filter = {_id: thought.userId}
+      const filter = {_id: req.body.userId}
       const user = await User.findOneAndUpdate(
         filter,
         { $addToSet: { thoughts: thought._id } },
@@ -60,8 +63,8 @@ module.exports = {
       }
 
       const user = await User.findOneAndUpdate(
-        { $includes: {thoughts: thought} },
-        { $pull: { thoughts: thought } },
+        { thoughts: req.params.thoughtId },
+        { $pull: { thoughts: req.params.thoughtId } },
         { new: true }
       );
 
@@ -98,8 +101,8 @@ module.exports = {
 
   // Add an reaction to a thought
   async addReaction(req, res) {
-    console.log('You are adding a reaction');
-    console.log(req.body);
+    //console.log('You are adding a reaction');
+    //console.log(req.body);
 
     try {
       const thought = await Thought.findOneAndUpdate(
@@ -114,7 +117,7 @@ module.exports = {
           .json({ message: 'No thought found with that id' });
       }
 
-      res.json(student);
+      res.json(thought);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -124,7 +127,7 @@ module.exports = {
     try {
       const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $pull: { reaction: { reactionId: req.params.reactionId } } },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       );
 
